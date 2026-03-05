@@ -171,7 +171,8 @@ SalamanderPianoApp/
 
 ## License
 
-This project is licensed under the **MIT License** – see [LICENSE](LICENSE).
+This project is licensed under the **MIT License** – see [LICENSE](LICENSE).  
+Copyright © µsini
 
 The **Salamander Grand Piano V3** samples are by Alexander Holm and released under  
 [Creative Commons Attribution 3.0](https://creativecommons.org/licenses/by/3.0/).

@@ -77,7 +77,7 @@ set(PLUGIN_SOURCES
 
 # ── JUCE plugin target ──
 juce_add_plugin(SalamanderPiano
-    COMPANY_NAME "SalamanderPiano"
+    COMPANY_NAME "µsini"
     IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT FALSE
@@ -148,7 +148,19 @@ if(NOT SALAMANDER_ANDROID)
         COMPONENT Standalone)
 
     # SFZ data → <install>/sfz/
-    install(DIRECTORY sfz/
+    # On Windows, sfz may be a directory junction. file(REAL_PATH) does not
+    # resolve junctions, so we use PowerShell to get the real target path.
+    execute_process(
+        COMMAND powershell -NoProfile -Command
+            "$item = Get-Item '${CMAKE_SOURCE_DIR}/sfz'; if ($item.LinkType) { $item.Target } else { $item.FullName }"
+        OUTPUT_VARIABLE SFZ_REAL_PATH
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    if(NOT SFZ_REAL_PATH)
+        set(SFZ_REAL_PATH "${CMAKE_SOURCE_DIR}/sfz")
+    endif()
+    file(TO_CMAKE_PATH "${SFZ_REAL_PATH}" SFZ_REAL_PATH)
+    install(DIRECTORY "${SFZ_REAL_PATH}/"
         DESTINATION sfz
         COMPONENT Standalone
         OPTIONAL)
@@ -164,7 +176,7 @@ endif()
 # ── CPack – Windows NSIS installer ──
 if(NOT SALAMANDER_ANDROID)
     set(CPACK_PACKAGE_NAME            "SalamanderPiano")
-    set(CPACK_PACKAGE_VENDOR          "Salamander Piano")
+    set(CPACK_PACKAGE_VENDOR          "µsini")
     set(CPACK_PACKAGE_VERSION         "${PROJECT_VERSION}")
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Salamander Piano – Free virtual grand piano (Standalone + VST3)")
     set(CPACK_PACKAGE_INSTALL_DIRECTORY   "SalamanderPiano")
