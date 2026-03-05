@@ -1,0 +1,35 @@
+# Build artifacts
+build*/
+cmake-build*/
+out/
+
+# IDE files
+.vs/
+.vscode/
+*.suo
+*.user
+*.sln.DotSettings
+CMakeSettings.json
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files (created by AI tools)
+tmpclaude*
+nul
+
+# Android local config
+android/local.properties
+
+# Android build cache
+android/.cxx/
+android/app/.cxx/
+android/build/
+android/app/build/
+*.apk
+*.aab
+
+# Note: samples (sfz/Samples/) are tracked via Git LFS — do NOT exclude them here

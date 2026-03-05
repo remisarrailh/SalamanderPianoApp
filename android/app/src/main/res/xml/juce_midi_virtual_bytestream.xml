@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<devices>
+    <device manufacturer="SalamanderPiano" product="SalamanderPiano"
+            name="SalamanderPiano">
+        <input-port name="In"/>
+        <output-port name="Out"/>
+    </device>
+</devices>

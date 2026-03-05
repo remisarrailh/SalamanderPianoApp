@@ -1,0 +1,116 @@
+// --------------------------------------
+// SFZ format v2 with ARIA extensions
+// --------------------------------------
+// Salamander Grand Piano V3 - Mobile
+// Yamaha C5 - 8 velocity layers
+// Optimized for Android: no hammer noise,
+// no pedal noise. String resonance enabled.
+// --------------------------------------
+
+
+//midi cc
+#define $STR_RES 20
+#define $HAMMER 21
+#define $PEDAL 22
+#define $RELEASE 72
+#define $OFFSET 98
+#define $VELTRACK 99
+
+//keyswitch
+#define $NATURAL C0
+#define $RETUNED C#0
+
+//file extension
+#define $EXT wav
+
+
+////////////////////////////////////////
+<control>
+default_path=Samples/
+
+label_cc7=Vol
+label_cc10=Pan
+label_cc64=Sus Pedal
+label_cc$STR_RES=String Res
+label_cc$RELEASE=Release
+label_cc$OFFSET=Offset
+label_cc$VELTRACK=Veltrack
+
+set_cc7=100
+set_hdcc10=0.5
+set_hdcc$STR_RES=0.5
+set_hdcc$RELEASE=0.5
+set_hdcc$OFFSET=0
+set_hdcc$VELTRACK=0.73
+
+
+//========================
+<global>
+amplitude_oncc7=100
+amplitude_curvecc7=4
+pan_oncc10=100
+pan_curvecc10=1
+amp_veltrack_oncc$VELTRACK=-100
+amp_veltrack_curvecc$VELTRACK=2
+ampeg_release_oncc$RELEASE=8
+ampeg_attack_oncc$OFFSET=0.001
+ampeg_attack_curvecc$OFFSET=7
+note_polyphony=1
+off_time=0.5
+sw_lokey=$NATURAL
+sw_hikey=$RETUNED
+sw_default=$NATURAL
+
+<master>
+sw_last=$NATURAL
+sw_label=Natural
+#include "Data/tune_nat.txt"
+#include "Data/notes_mobile.txt"
+
+<master>
+sw_last=$RETUNED
+sw_label=Retuned
+#include "Data/tune_ret.txt"
+#include "Data/notes_mobile.txt"
+
+
+//========================
+<global>
+amplitude_oncc7=100
+amplitude_curvecc7=4
+pan_oncc10=100
+pan_curvecc10=1
+trigger=release
+note_polyphony=1
+off_time=0.5
+
+<master>
+locc$STR_RES=1
+amplitude_oncc$STR_RES=200
+#include "Data/str_res.txt"
+
+
+//--------------------------------------
+<curve>
+curve_index=4
+v000=0
+v095=1
+v127=1
+
+<curve>
+curve_index=1
+v000=-1
+v064=0
+v127=1
+
+<curve>
+curve_index=2
+v000=0
+v001=1
+v127=1
+
+<curve>
+curve_index=7
+v000=0
+v001=1
+v127=1

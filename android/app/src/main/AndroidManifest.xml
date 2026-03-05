@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          android:versionCode="1"
+          android:versionName="1.0.0">
+
+    <!-- Audio output -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <supports-screens
+        android:smallScreens="true"
+        android:normalScreens="true"
+        android:largeScreens="true"
+        android:xlargeScreens="true"
+        android:anyDensity="true"/>
+
+    <!-- USB MIDI keyboard support -->
+    <uses-feature android:name="android.hardware.usb.host" android:required="false"/>
+
+    <!-- MIDI feature (optional) -->
+    <uses-feature android:name="android.software.midi" android:required="false"/>
+
+    <!-- OpenGL ES 3.0 for JUCE GUI rendering -->
+    <uses-feature android:glEsVersion="0x00030000" android:required="true"/>
+
+    <application
+        android:label="@string/app_name"
+        android:name="com.rmsl.juce.JuceApp"
+        android:hardwareAccelerated="false"
+        android:largeHeap="true">
+
+        <activity
+            android:name="com.rmsl.juce.JuceActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|navigation|smallestScreenSize|screenLayout|uiMode"
+            android:launchMode="singleTask"
+            android:hardwareAccelerated="true"
+            android:theme="@android:style/Theme.NoTitleBar"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- JUCE MIDI virtual device services -->
+        <service
+            android:name="com.rmsl.juce.VirtualMidiServices$VirtualUmpService"
+            android:enabled="false"
+            android:exported="true"
+            android:permission="android.permission.BIND_MIDI_DEVICE_SERVICE">
+            <intent-filter>
+                <action android:name="android.media.midi.MidiUmpDeviceService"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.media.midi.MidiUmpDeviceService"
+                android:resource="@xml/juce_midi_virtual_ump"/>
+        </service>
+
+        <service
+            android:name="com.rmsl.juce.VirtualMidiServices$VirtualBytestreamService"
+            android:enabled="false"
+            android:exported="true"
+            android:permission="android.permission.BIND_MIDI_DEVICE_SERVICE">
+            <intent-filter>
+                <action android:name="android.media.midi.MidiDeviceService"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.media.midi.MidiDeviceService"
+                android:resource="@xml/juce_midi_virtual_bytestream"/>
+        </service>
+
+    </application>
+
+</manifest>
