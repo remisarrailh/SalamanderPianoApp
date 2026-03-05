@@ -1,0 +1,6 @@
+[submodule "extern/JUCE"]
+	path = extern/JUCE
+	url = https://github.com/juce-framework/JUCE.git
+[submodule "extern/sfizz"]
+	path = extern/sfizz
+	url = https://github.com/sfztools/sfizz.git
