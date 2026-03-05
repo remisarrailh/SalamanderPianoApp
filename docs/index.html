@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Salamander Piano</title>
+  <title>Salamander Piano Anywhere</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet" />
   <style>
@@ -124,7 +124,7 @@
     .key.black { width: 11px; height: 56px; background: var(--ink); border: 1px solid #333; margin: 0 -5px; z-index: 2; align-self: flex-start; }
 
     .hero-eyebrow {
-      font-size: .7rem; letter-spacing: .35em; text-transform: uppercase;
+      font-size: 1rem; letter-spacing: .35em; text-transform: uppercase;
       color: var(--gold); margin-bottom: 1.8rem; opacity: .85; position: relative;
     }
     .hero-title {
@@ -153,6 +153,8 @@
     .btn-ghost { background: transparent; color: var(--fog); border: 1px solid var(--gray2); }
     .btn-ghost:hover { border-color: var(--silver); color: var(--white); transform: translateY(-2px); }
     .btn svg { width: 16px; height: 16px; fill: currentColor; flex-shrink: 0; }
+    button.btn { appearance: none; }
+    .btn-listen.playing { border-color: var(--gold); color: var(--gold); }
 
     /* ══ SECTIONS ══ */
     section { position: relative; z-index: 1; }
@@ -222,6 +224,7 @@
 <body>
 
 <canvas id="starfield"></canvas>
+<audio id="demo-audio" src="SalamanderPianoTest.mp3" preload="none"></audio>
 
 <div class="lang-switch" role="group" aria-label="Language">
   <button id="btn-en" class="active" onclick="setLang('en')">EN</button>
@@ -232,13 +235,18 @@
 <section class="hero">
   <div class="hero-orb"></div>
   <p class="hero-eyebrow" data-i18n="eyebrow">Free &amp; Open Source · v0.1</p>
-  <h1 class="hero-title">Salamander<br /><em>Piano</em></h1>
+  <h1 class="hero-title">Salamander<br /><em>Piano Anywhere</em></h1>
   <p class="hero-sub" data-i18n="hero-sub">A grand piano that lives in your pocket, your studio, your DAW. 88 keys. 16 velocity layers. No compromise.</p>
   <div class="cta-group">
-    <a class="btn btn-primary" href="https://github.com/remisarrailh/SalamanderPianoApp/releases/latest">
+    <a class="btn btn-primary" href="#download">
       <svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 10.5l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 0 1 1.06-1.06L7 10.94V4.75a.75.75 0 0 1 1.5 0v6.19l1.44-1.44a.75.75 0 0 1 1.06 1.06z"/></svg>
       <span data-i18n="cta-download">Download</span>
     </a>
+    <button type="button" class="btn btn-ghost btn-listen" id="btn-listen" onclick="togglePlay()">
+      <svg id="icon-play" viewBox="0 0 16 16"><path d="M3 2.5l11 5.5-11 5.5z"/></svg>
+      <svg id="icon-pause" viewBox="0 0 16 16" style="display:none"><path d="M3 2h3v12H3zm7 0h3v12h-3z"/></svg>
+      <span data-i18n="cta-listen">Listen</span>
+    </button>
     <a class="btn btn-ghost" href="https://github.com/remisarrailh/SalamanderPianoApp">
       <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
       <span data-i18n="cta-source">Source</span>
@@ -304,9 +312,9 @@
       <h2 data-i18n="dl-title">Your platform, your way</h2>
     </div>
     <div class="platforms">
-      <div class="platform-card fade-in"><p class="platform-os">Windows</p><h3 data-i18n="dl1-title">Standalone App</h3><p data-i18n="dl1-body">A self-contained application. Open it, play it. Samples included in the installer. No DAW required.</p><a class="btn btn-primary" href="https://github.com/remisarrailh/SalamanderPianoApp/releases/latest"><svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 10.5l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 0 1 1.06-1.06L7 10.94V4.75a.75.75 0 0 1 1.5 0v6.19l1.44-1.44a.75.75 0 0 1 1.06 1.06z"/></svg><span data-i18n="dl1-btn">Download .exe installer</span></a></div>
-      <div class="platform-card fade-in"><p class="platform-os">Windows · DAW</p><h3 data-i18n="dl2-title">VST3 Plugin</h3><p data-i18n="dl2-body">Same instrument, inside your DAW. The installer includes the VST3 plugin — place it in your VST3 folder and you're done.</p><a class="btn btn-ghost" href="https://github.com/remisarrailh/SalamanderPianoApp/releases/latest"><svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 10.5l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 0 1 1.06-1.06L7 10.94V4.75a.75.75 0 0 1 1.5 0v6.19l1.44-1.44a.75.75 0 0 1 1.06 1.06z"/></svg><span data-i18n="dl2-btn">Get from installer</span></a></div>
-      <div class="platform-card fade-in"><p class="platform-os">Android</p><h3 data-i18n="dl3-title">Mobile App</h3><p data-i18n="dl3-body">A grand piano on your phone. Samples are bundled in the APK and extracted on first launch — no internet needed after that.</p><a class="btn btn-primary" href="https://github.com/remisarrailh/SalamanderPianoApp/releases/latest"><svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 10.5l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 0 1 1.06-1.06L7 10.94V4.75a.75.75 0 0 1 1.5 0v6.19l1.44-1.44a.75.75 0 0 1 1.06 1.06z"/></svg><span data-i18n="dl3-btn">Download .apk</span></a></div>
+      <div class="platform-card fade-in"><p class="platform-os">Windows</p><h3 data-i18n="dl1-title">Standalone App</h3><p data-i18n="dl1-body">A self-contained application. Open it, play it. Samples included in the installer. No DAW required.</p><a class="btn btn-primary" href="https://github.com/remisarrailh/SalamanderPianoApp/releases/download/v0.1/SalamanderPiano-1.0.0-win64.exe"><svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 10.5l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 0 1 1.06-1.06L7 10.94V4.75a.75.75 0 0 1 1.5 0v6.19l1.44-1.44a.75.75 0 0 1 1.06 1.06z"/></svg><span data-i18n="dl1-btn">Download .exe installer</span></a></div>
+      <div class="platform-card fade-in"><p class="platform-os">Windows · DAW</p><h3 data-i18n="dl2-title">VST3 Plugin</h3><p data-i18n="dl2-body">Same instrument, inside your DAW. The installer includes the VST3 plugin — place it in your VST3 folder and you're done.</p><a class="btn btn-ghost" href="https://github.com/remisarrailh/SalamanderPianoApp/releases/download/v0.1/SalamanderPiano-1.0.0-win64.exe"><svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 10.5l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 0 1 1.06-1.06L7 10.94V4.75a.75.75 0 0 1 1.5 0v6.19l1.44-1.44a.75.75 0 0 1 1.06 1.06z"/></svg><span data-i18n="dl2-btn">Get from installer</span></a></div>
+      <div class="platform-card fade-in"><p class="platform-os">Android</p><h3 data-i18n="dl3-title">Mobile App</h3><p data-i18n="dl3-body">A grand piano on your phone. Samples are bundled in the APK and extracted on first launch — no internet needed after that.</p><a class="btn btn-primary" href="https://github.com/remisarrailh/SalamanderPianoApp/releases/download/v0.1/SalamanderPiano-v0.1-android.apk"><svg viewBox="0 0 16 16"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 10.5l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 0 1 1.06-1.06L7 10.94V4.75a.75.75 0 0 1 1.5 0v6.19l1.44-1.44a.75.75 0 0 1 1.06 1.06z"/></svg><span data-i18n="dl3-btn">Download .apk</span></a></div>
     </div>
   </div>
 </section>
@@ -331,7 +339,7 @@
 
 <!-- FOOTER -->
 <footer>
-  <p class="footer-logo">Salamander Piano</p>
+  <p class="footer-logo">Salamander Piano Anywhere</p>
   <p><span data-i18n="footer-made">Made with care by</span> <a href="https://github.com/remisarrailh">µsini</a> · MIT License · <a href="https://github.com/remisarrailh/SalamanderPianoApp">GitHub</a></p>
   <p style="margin-top:.5rem"><span data-i18n="footer-samples">Piano samples by Alexander Holm</span> · <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noopener">CC BY 3.0</a></p>
 </footer>
@@ -356,7 +364,7 @@
         y: Math.random() * H,
         r: Math.random() * 1.15 + 0.1,
         alpha: Math.random() * 0.65 + 0.1,
-        speed: Math.random() * 0.016 + 0.003,
+        speed: Math.random() * 0.4 + 0.12,
         phase: Math.random() * Math.PI * 2
       });
     }
@@ -384,6 +392,32 @@
 })();
 
 /* ═══════════════════════════════════════════
+   AUDIO PLAYER
+═══════════════════════════════════════════ */
+function togglePlay() {
+  var audio = document.getElementById('demo-audio');
+  var btn   = document.getElementById('btn-listen');
+  var play  = document.getElementById('icon-play');
+  var pause = document.getElementById('icon-pause');
+  if (audio.paused) {
+    audio.play();
+    play.style.display  = 'none';
+    pause.style.display = '';
+    btn.classList.add('playing');
+  } else {
+    audio.pause();
+    play.style.display  = '';
+    pause.style.display = 'none';
+    btn.classList.remove('playing');
+  }
+  audio.onended = function () {
+    play.style.display  = '';
+    pause.style.display = 'none';
+    btn.classList.remove('playing');
+  };
+}
+
+/* ═══════════════════════════════════════════
    PIANO KEYS
 ═══════════════════════════════════════════ */
 (function () {
@@ -401,6 +435,7 @@ var STRINGS = {
     'eyebrow':        'Free &amp; Open Source &middot; v0.1',
     'hero-sub':       'A grand piano that lives in your pocket, your studio, your DAW. 88 keys. 16 velocity layers. No compromise.',
     'cta-download':   'Download',
+    'cta-listen':     'Listen',
     'cta-source':     'Source',
     'about-label':    'The instrument',
     'about-quote-1':  'Every note you&rsquo;ve ever imagined &mdash;',
@@ -435,6 +470,7 @@ var STRINGS = {
     'eyebrow':        'Gratuit &amp; Open Source &middot; v0.1',
     'hero-sub':       'Un piano à queue dans ta poche, ton studio, ton DAW. 88 touches. 16 couches de vélocité. Sans compromis.',
     'cta-download':   'Télécharger',
+    'cta-listen':     '&Eacute;couter',
     'cta-source':     'Code source',
     'about-label':    'L&rsquo;instrument',
     'about-quote-1':  'Chaque note que tu as jamais imaginée &mdash;',
