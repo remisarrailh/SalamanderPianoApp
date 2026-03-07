@@ -3,7 +3,7 @@
 
 HeaderPanel::HeaderPanel()
 {
-    titleLabel.setText ("Salamander Grand Piano", juce::dontSendNotification);
+    titleLabel.setText ("Salamander Grand Piano  v" SALAMANDER_VERSION, juce::dontSendNotification);
     titleLabel.setFont (juce::FontOptions (20.0f, juce::Font::bold));
     titleLabel.setColour (juce::Label::textColourId, SalamanderLookAndFeel::accentColour);
     titleLabel.setJustificationType (juce::Justification::centred);

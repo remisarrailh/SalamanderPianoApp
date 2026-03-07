@@ -32,6 +32,7 @@ public:
     // Status
     int getActiveVoiceCount() const;
     int getMaxVoices() const;
+    void setNumVoices (int numVoices);
     juce::String getLoadError() const { return loadError; }
     int getNumRegions() const;
     int getNumSamples() const;

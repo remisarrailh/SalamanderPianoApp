@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.22)
 # Force CMP0091 for MSVC runtime library control
 cmake_policy(SET CMP0091 NEW)
 
-project(SalamanderPiano VERSION 1.0.0 LANGUAGES C CXX)
+project(SalamanderPiano VERSION 0.2.3 LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -77,7 +77,7 @@ set(PLUGIN_SOURCES
 
 # ── JUCE plugin target ──
 juce_add_plugin(SalamanderPiano
-    COMPANY_NAME "µsini"
+    COMPANY_NAME "usini"
     IS_SYNTH TRUE
     NEEDS_MIDI_INPUT TRUE
     NEEDS_MIDI_OUTPUT FALSE
@@ -139,6 +139,25 @@ target_link_libraries(SalamanderPiano
         juce::juce_recommended_config_flags
         juce::juce_recommended_warning_flags
 )
+
+# ── VST3 snapshot image (128×128 PNG shown in DAW plugin lists) ──
+# Place your image at resources/vst3_snapshot.png (128×128 px recommended)
+set(VST3_SNAPSHOT_SRC "${CMAKE_SOURCE_DIR}/resources/vst3_snapshot.png")
+set(VST3_SNAPSHOT_2X_SRC "${CMAKE_SOURCE_DIR}/resources/vst3_snapshot_2x.png")
+set(VST3_SNAPSHOT_CID "ABCDEF019182FAEB53616C7053706C70")
+if(NOT SALAMANDER_ANDROID)
+    add_custom_command(TARGET SalamanderPiano_VST3 POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "$<TARGET_FILE_DIR:SalamanderPiano_VST3>/../../Resources/Snapshots"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${VST3_SNAPSHOT_SRC}"
+            "$<TARGET_FILE_DIR:SalamanderPiano_VST3>/../../Resources/Snapshots/${VST3_SNAPSHOT_CID}_snapshot.png"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${VST3_SNAPSHOT_2X_SRC}"
+            "$<TARGET_FILE_DIR:SalamanderPiano_VST3>/../../Resources/Snapshots/${VST3_SNAPSHOT_CID}_snapshot_2x.png"
+        COMMENT "Copying VST3 snapshot images into bundle"
+    )
+endif()
 
 # ── Install rules (Windows) ──
 if(NOT SALAMANDER_ANDROID)

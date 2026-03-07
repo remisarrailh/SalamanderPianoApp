@@ -54,6 +54,12 @@ public:
     float getCpuLoad() const { return cpuLoad.load(); }
     float getIoLoad()  const { return sfizzEngine.getIoLoad(); }
 
+    // Non-parameter state (release in seconds, voices count)
+    float getSavedRelease() const { return savedRelease; }
+    int   getSavedVoices()  const { return savedVoices; }
+    void  setSavedRelease (float v) { savedRelease = v; }
+    void  setSavedVoices  (int v)   { savedVoices = v; }
+
 private:
     void initializeEngine();
 
@@ -74,6 +80,9 @@ private:
     // CPU load measurement
     std::atomic<float> cpuLoad { 0.0f };
     double blockDurationSeconds = 0.0; // updated in prepareToPlay
+
+    float savedRelease { 4.0f }; // seconds (0-8)
+    int   savedVoices  { 32 };
 
     // Dry buffer for reverb wet/dry mix
     juce::AudioBuffer<float> dryBuffer;

@@ -18,7 +18,7 @@ SfizzEngine::SfizzEngine()
     sfizz_set_preload_size (synth, 96000);
     SFZLOG ("SfizzEngine: voices=16, preload=96000/2s@48kHz (Android)");
    #else
-    sfizz_set_num_voices (synth, 64);
+    sfizz_set_num_voices (synth, 32);
    #endif
 }
 
@@ -64,6 +64,12 @@ bool SfizzEngine::loadSfzFile (const juce::File& sfzFile)
     }
 
     return result;
+}
+
+void SfizzEngine::setNumVoices (int numVoices)
+{
+    if (synth != nullptr)
+        sfizz_set_num_voices (synth, juce::jlimit (1, 256, numVoices));
 }
 
 void SfizzEngine::prepareToPlay (double sampleRate, int samplesPerBlock)

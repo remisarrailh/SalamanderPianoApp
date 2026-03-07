@@ -183,6 +183,8 @@ void SalamanderPianoProcessor::getStateInformation (juce::MemoryBlock& destData)
     stream.writeFloat (*volumeParam);
     stream.writeFloat (*reverbMixParam);
     stream.writeFloat (*reverbSizeParam);
+    stream.writeFloat (savedRelease);
+    stream.writeInt   (savedVoices);
 }
 
 void SalamanderPianoProcessor::setStateInformation (const void* data, int sizeInBytes)
@@ -191,10 +193,18 @@ void SalamanderPianoProcessor::setStateInformation (const void* data, int sizeIn
 
     if (stream.getNumBytesRemaining() >= 12)
     {
-        *volumeParam = stream.readFloat();
+        *volumeParam    = stream.readFloat();
         *reverbMixParam = stream.readFloat();
         *reverbSizeParam = stream.readFloat();
     }
+    if (stream.getNumBytesRemaining() >= 4)
+        savedRelease = stream.readFloat();
+    if (stream.getNumBytesRemaining() >= 4)
+        savedVoices = stream.readInt();
+
+    // Re-apply engine state that isn't driven by audio parameters
+    sfizzEngine.setNumVoices (savedVoices);
+    sfizzEngine.handleHdController (1, 72, savedRelease / 8.0f);
 }
 
 void SalamanderPianoProcessor::initializeEngine()

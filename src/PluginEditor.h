@@ -41,6 +41,8 @@ private:
     PianoKeyboard pianoKeyboard;
     TroubleshootPanel troubleshootPanel;
 
+    bool wasEngineReady = false;
+
     // Layout constants
     static constexpr int headerHeight = 50;
     static constexpr int midiBarHeight = 28;

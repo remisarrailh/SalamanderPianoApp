@@ -48,7 +48,11 @@ if ($Clean -and (Test-Path $buildDir)) {
 }
 
 # ── 2. CMake Configure ────────────────────────────────────
-if (-not (Test-Path (Join-Path $buildDir "CMakeCache.txt"))) {
+$cacheFile   = Join-Path $buildDir "CMakeCache.txt"
+$cmakeNeeded = (-not (Test-Path $cacheFile)) -or
+               ((Get-Item (Join-Path $projectRoot "CMakeLists.txt")).LastWriteTime -gt (Get-Item $cacheFile).LastWriteTime)
+
+if ($cmakeNeeded) {
     Write-Host "[2/4] Configuring with CMake..." -ForegroundColor Yellow
     cmake -B $buildDir -S $projectRoot
     if ($LASTEXITCODE -ne 0) { Write-Host "ERROR: CMake configure failed." -ForegroundColor Red; exit 1 }
@@ -61,6 +65,46 @@ if (-not (Test-Path (Join-Path $buildDir "CMakeCache.txt"))) {
 Write-Host "[3/4] Building (Standalone + VST3)..." -ForegroundColor Yellow
 cmake --build $buildDir --config $config
 if ($LASTEXITCODE -ne 0) { Write-Host "ERROR: Build failed." -ForegroundColor Red; exit 1 }
+
+# ── VST3 snapshot images (always copy, independent of incremental build) ──
+$vst3Bundle  = Join-Path $buildDir "SalamanderPiano_artefacts\$config\VST3\Salamander Piano.vst3"
+$snapshotDir = Join-Path $vst3Bundle "Contents\Resources\Snapshots"
+$snapshotCid = "ABCDEF019182FAEB53616C7053706C70"
+if (Test-Path $vst3Bundle) {
+    New-Item -ItemType Directory -Force $snapshotDir | Out-Null
+    foreach ($suffix in @("", "_2x")) {
+        $src = Join-Path $projectRoot "resources\vst3_snapshot$suffix.png"
+        $dst = Join-Path $snapshotDir "${snapshotCid}_snapshot$suffix.png"
+        if (Test-Path $src) {
+            Copy-Item -Force $src $dst
+            Write-Host "  Snapshot$suffix copied into VST3 bundle." -ForegroundColor DarkGray
+        }
+    }
+
+    # Patch moduleinfo.json: populate the empty "Snapshots": [] for the processor class.
+    # Some hosts (e.g. Reason) read this array as the authoritative list and won't
+    # check the filesystem if it is empty.
+    $moduleinfoPath = Join-Path $vst3Bundle "Contents\Resources\moduleinfo.json"
+    if (Test-Path $moduleinfoPath) {
+        $snapshotEntries = @"
+        {
+          "path": "Snapshots/${snapshotCid}_snapshot.png",
+          "scaleFactor": 1.0,
+        },
+        {
+          "path": "Snapshots/${snapshotCid}_snapshot_2x.png",
+          "scaleFactor": 2.0,
+        },
+"@
+        $content = Get-Content $moduleinfoPath -Raw
+        # Replace the FIRST empty Snapshots array (the Audio Module Class / processor)
+        $patched = [regex]::Replace($content, '("Snapshots":\s*\[)\s*(\])', "`$1`n$snapshotEntries      `$2", 1)
+        if ($patched -ne $content) {
+            Set-Content -Path $moduleinfoPath -Value $patched -NoNewline
+            Write-Host "  moduleinfo.json patched with snapshot entries." -ForegroundColor DarkGray
+        }
+    }
+}
 
 Write-Host ""
 Write-Host "============================================" -ForegroundColor Green

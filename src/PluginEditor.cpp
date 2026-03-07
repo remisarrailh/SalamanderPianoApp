@@ -31,7 +31,18 @@ SalamanderPianoEditor::SalamanderPianoEditor (SalamanderPianoProcessor& p)
     controlPanel.onReleaseChanged = [this] (float v)
     {
         processor.getSfizzEngine().handleHdController (1, 72, v);
+        processor.setSavedRelease (v * 8.0f);
     };
+
+    // Voice count ComboBox
+    controlPanel.onVoicesChanged = [this] (int n)
+    {
+        processor.getSfizzEngine().setNumVoices (n);
+        processor.setSavedVoices (n);
+    };
+
+    // Restore non-parameter UI state (release, voices) from saved processor state
+    controlPanel.initState (processor.getSavedRelease(), processor.getSavedVoices());
 
     // Initial UI state
     updateMidiStatus();
@@ -138,9 +149,11 @@ void SalamanderPianoEditor::timerCallback()
     midiStatusBar.setCpuLoad (processor.getCpuLoad());
     midiStatusBar.setIoLoad  (processor.getIoLoad());
 
-    // Repaint if still loading
-    if (! processor.isEngineReady())
+    // Repaint while loading, and once more on the frame it becomes ready
+    bool engineReady = processor.isEngineReady();
+    if (! engineReady || ! wasEngineReady)
         repaint();
+    wasEngineReady = engineReady;
 }
 
 void SalamanderPianoEditor::mouseDown (const juce::MouseEvent& e)

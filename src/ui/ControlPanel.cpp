@@ -43,6 +43,23 @@ ControlPanel::ControlPanel (juce::AudioParameterFloat* volumeParam,
     releaseLabel.setJustificationType (juce::Justification::centredRight);
     addAndMakeVisible (releaseLabel);
 
+    // Voices ComboBox
+    voicesLabel.setText ("Voices", juce::dontSendNotification);
+    voicesLabel.setFont (juce::FontOptions (13.0f));
+    voicesLabel.setColour (juce::Label::textColourId, SalamanderLookAndFeel::textColour);
+    voicesLabel.setJustificationType (juce::Justification::centredRight);
+    addAndMakeVisible (voicesLabel);
+
+    for (int v : { 8, 16, 32, 48, 64, 128, 256 })
+        voicesCombo.addItem (juce::String (v), v);
+    voicesCombo.setSelectedId (32, juce::dontSendNotification);
+    voicesCombo.onChange = [this]()
+    {
+        if (onVoicesChanged)
+            onVoicesChanged (voicesCombo.getSelectedId());
+    };
+    addAndMakeVisible (voicesCombo);
+
     // Wide sustain toggle button
     sustainButton.setButtonText ("Sustain");
     sustainButton.setClickingTogglesState (true);
@@ -55,10 +72,16 @@ ControlPanel::ControlPanel (juce::AudioParameterFloat* volumeParam,
     };
     addAndMakeVisible (sustainButton);
 
-    // Parameter attachments
+    // Parameter attachments (volume/reverb are AudioParameters – attachment handles restore)
     volumeAttachment = std::make_unique<juce::SliderParameterAttachment> (*volumeParam, volumeSlider);
     reverbMixAttachment = std::make_unique<juce::SliderParameterAttachment> (*reverbMixParam, reverbMixSlider);
     reverbSizeAttachment = std::make_unique<juce::SliderParameterAttachment> (*reverbSizeParam, reverbSizeSlider);
+}
+
+void ControlPanel::initState (float releaseSeconds, int voices)
+{
+    releaseSlider.setValue (releaseSeconds, juce::dontSendNotification);
+    voicesCombo.setSelectedId (voices, juce::dontSendNotification);
 }
 
 void ControlPanel::paint (juce::Graphics& g)
@@ -89,6 +112,11 @@ void ControlPanel::resized()
     releaseLabel.setBounds (row4.removeFromLeft (labelWidth));
     releaseSlider.setBounds (row4);
 
-    area.removeFromTop (4);
-    sustainButton.setBounds (area);
+    area.removeFromTop (2);
+    auto bottomRow = area.removeFromTop (26);
+    sustainButton.setBounds (bottomRow.removeFromLeft (bottomRow.getWidth() / 2 - 2));
+    bottomRow.removeFromLeft (4);
+    auto voicesRow = bottomRow;
+    voicesLabel.setBounds (voicesRow.removeFromLeft (labelWidth));
+    voicesCombo.setBounds (voicesRow);
 }

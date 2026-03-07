@@ -22,9 +22,11 @@ private:
     juce::TextButton panicButton;
     juce::Label rangeLabel;
 
-    int currentBaseOctave = 2;
+    static constexpr int kMinNote = 21;   // A0
+    static constexpr int kMaxNote = 108;  // C8
+    static constexpr int kTotalWhiteKeys = 52;
 
-    void updateRange();
+    void updateRangeLabel();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PianoKeyboard)
 };
